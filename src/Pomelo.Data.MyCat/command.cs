@@ -15,31 +15,31 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Collections.Generic;
 #if SUPPORT_REPLICATION
-using Pomelo.Data.MyCat.Replication;
+using Pomelo.Data.MySql.Replication;
 #endif
 
-namespace Pomelo.Data.MyCat
+namespace Pomelo.Data.MySql
 {
     /// <include file='docs/mysqlcommand.xml' path='docs/ClassSummary/*'/> 
 #if NETSTANDARD1_3
-    public sealed partial class MyCatCommand
+    public sealed partial class MySqlCommand
 #else
-    public sealed partial class MyCatCommand : ICloneable, IDisposable
+    public sealed partial class MySqlCommand : ICloneable, IDisposable
 #endif
 
     {
-        MyCatConnection connection;
-        MyCatTransaction curTransaction;
+        MySqlConnection connection;
+        MySqlTransaction curTransaction;
         string cmdText;
         CommandType cmdType;
-        MyCatParameterCollection parameters;
+        MySqlParameterCollection parameters;
         private IAsyncResult asyncResult;
         internal Int64 lastInsertedId;
         private PreparableStatement statement;
         private int commandTimeout;
         private bool canceled;
         private bool resetSqlSelect;
-        List<MyCatCommand> batch;
+        List<MySqlCommand> batch;
         private string batchableCommandText;
         CommandTimer commandTimer;
         private bool useDefaultTimeout;
@@ -48,10 +48,10 @@ namespace Pomelo.Data.MyCat
         private bool internallyCreated;
 
         /// <include file='docs/mysqlcommand.xml' path='docs/ctor1/*'/>
-        public MyCatCommand()
+        public MySqlCommand()
         {
             cmdType = CommandType.Text;
-            parameters = new MyCatParameterCollection(this);
+            parameters = new MySqlParameterCollection(this);
             cmdText = String.Empty;
             useDefaultTimeout = true;
             Constructor();
@@ -60,22 +60,22 @@ namespace Pomelo.Data.MyCat
         partial void Constructor();
 
         /// <include file='docs/mysqlcommand.xml' path='docs/ctor2/*'/>
-        public MyCatCommand(string cmdText)
+        public MySqlCommand(string cmdText)
           : this()
         {
             CommandText = cmdText;
         }
 
         /// <include file='docs/mysqlcommand.xml' path='docs/ctor3/*'/>
-        public MyCatCommand(string cmdText, MyCatConnection connection)
+        public MySqlCommand(string cmdText, MySqlConnection connection)
           : this(cmdText)
         {
             Connection = connection;
         }
 
         /// <include file='docs/mysqlcommand.xml' path='docs/ctor4/*'/>
-        public MyCatCommand(string cmdText, MyCatConnection connection,
-                MyCatTransaction transaction)
+        public MySqlCommand(string cmdText, MySqlConnection connection,
+                MySqlTransaction transaction)
           :
           this(cmdText, connection)
         {
@@ -84,12 +84,12 @@ namespace Pomelo.Data.MyCat
 
         #region Destructor
 #if NETSTANDARD1_3
-        ~MyCatCommand()
+        ~MySqlCommand()
         {
             this.Dispose();
         }
 #else
-        ~MyCatCommand()
+        ~MySqlCommand()
         {
             Dispose(false);
         }
@@ -110,7 +110,7 @@ namespace Pomelo.Data.MyCat
         /// <include file='docs/mysqlcommand.xml' path='docs/CommandText/*'/>
         [Category("Data")]
         [Description("Command text to execute")]
-        // [Editor("Pomelo.Data.Common.Design.SqlCommandTextEditor,MyCatClient.Design", typeof(System.Drawing.Design.UITypeEditor))]
+        // [Editor("Pomelo.Data.Common.Design.SqlCommandTextEditor,MySqlClient.Design", typeof(System.Drawing.Design.UITypeEditor))]
         public override string CommandText
         {
             get { return cmdText; }
@@ -146,7 +146,7 @@ namespace Pomelo.Data.MyCat
                 int timeout = Math.Min(value, Int32.MaxValue / 1000);
                 if (timeout != value)
                 {
-                    MyCatTrace.LogWarning(connection.ServerThread,
+                    MySqlTrace.LogWarning(connection.ServerThread,
                     "Command timeout value too large ("
                     + value + " seconds). Changed to max. possible value ("
                     + timeout + " seconds)");
@@ -174,7 +174,7 @@ namespace Pomelo.Data.MyCat
         /// <include file='docs/mysqlcommand.xml' path='docs/Connection/*'/>
         [Category("Behavior")]
         [Description("Connection used by the command")]
-        public new MyCatConnection Connection
+        public new MySqlConnection Connection
         {
             get { return connection; }
             set
@@ -211,7 +211,7 @@ namespace Pomelo.Data.MyCat
 #if !NETSTANDARD1_3
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
 #endif
-        public new MyCatParameterCollection Parameters
+        public new MySqlParameterCollection Parameters
         {
             get { return parameters; }
         }
@@ -219,7 +219,7 @@ namespace Pomelo.Data.MyCat
 
         /// <include file='docs/mysqlcommand.xml' path='docs/Transaction/*'/>
         [Browsable(false)]
-        public new MyCatTransaction Transaction
+        public new MySqlTransaction Transaction
         {
             get { return curTransaction; }
             set { curTransaction = value; }
@@ -237,7 +237,7 @@ namespace Pomelo.Data.MyCat
             set { cacheAge = value; }
         }
 
-        internal List<MyCatCommand> Batch
+        internal List<MySqlCommand> Batch
         {
             get { return batch; }
         }
@@ -275,16 +275,16 @@ namespace Pomelo.Data.MyCat
         }
 
         /// <summary>
-        /// Creates a new instance of a <see cref="MyCatParameter"/> object.
+        /// Creates a new instance of a <see cref="MySqlParameter"/> object.
         /// </summary>
         /// <remarks>
         /// This method is a strongly-typed version of <see cref="IDbCommand.CreateParameter"/>.
         /// </remarks>
-        /// <returns>A <see cref="MyCatParameter"/> object.</returns>
+        /// <returns>A <see cref="MySqlParameter"/> object.</returns>
         /// 
-        public new MyCatParameter CreateParameter()
+        public new MySqlParameter CreateParameter()
         {
-            return (MyCatParameter)CreateDbParameter();
+            return (MySqlParameter)CreateDbParameter();
         }
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace Pomelo.Data.MyCat
 
             // Data readers have to be closed first
             //if (connection.IsInUse && !this.internallyCreated)
-            //    Throw(new MyCatException("There is already an open DataReader associated with this Connection which must be closed first."));
+            //    Throw(new MySqlException("There is already an open DataReader associated with this Connection which must be closed first."));
         }
 
         /// <include file='docs/mysqlcommand.xml' path='docs/ExecuteNonQuery/*'/>
@@ -322,7 +322,7 @@ namespace Pomelo.Data.MyCat
 #endif
 
             // ok, none of our interceptors handled this so we default
-            using (MyCatDataReader reader = ExecuteReader())
+            using (MySqlDataReader reader = ExecuteReader())
             {
 #if !NETSTANDARD1_3
                 reader.Close();
@@ -342,7 +342,7 @@ namespace Pomelo.Data.MyCat
             }
         }
 
-        internal void Close(MyCatDataReader reader)
+        internal void Close(MySqlDataReader reader)
         {
             if (statement != null)
                 statement.Close(reader);
@@ -380,23 +380,23 @@ namespace Pomelo.Data.MyCat
             if (resetSqlSelect)
             {
                 resetSqlSelect = false;
-                MyCatCommand command = new MyCatCommand("SET SQL_SELECT_LIMIT=DEFAULT", connection);
+                MySqlCommand command = new MySqlCommand("SET SQL_SELECT_LIMIT=DEFAULT", connection);
                 command.internallyCreated = true;
                 command.ExecuteNonQuery();
             }
         }
 
         /// <include file='docs/mysqlcommand.xml' path='docs/ExecuteReader/*'/>
-        public new MyCatDataReader ExecuteReader()
+        public new MySqlDataReader ExecuteReader()
         {
             return ExecuteReader(CommandBehavior.Default);
         }
 
-        private MyCatDataReader _ExecuteReader(CommandBehavior behavior)
+        private MySqlDataReader _ExecuteReader(CommandBehavior behavior)
         {
 #if !NETSTANDARD1_3
             // give our interceptors a shot at it first
-            MyCatDataReader interceptedReader = null;
+            MySqlDataReader interceptedReader = null;
             if (connection != null &&
                  connection.commandInterceptor != null &&
                  connection.commandInterceptor.ExecuteReader(CommandText, behavior, ref interceptedReader))
@@ -480,7 +480,7 @@ namespace Pomelo.Data.MyCat
 
                 try
                 {
-                    MyCatDataReader reader = new MyCatDataReader(this, statement, behavior);
+                    MySqlDataReader reader = new MySqlDataReader(this, statement, behavior);
                     connection.Reader.Add(reader);
                     canceled = false;
                     // execute the statement
@@ -503,9 +503,9 @@ namespace Pomelo.Data.MyCat
                 catch (IOException ioex)
                 {
                     connection.Abort(); // Closes connection without returning it to the pool
-                    throw new MyCatException(Resources.FatalErrorDuringExecute, ioex);
+                    throw new MySqlException(Resources.FatalErrorDuringExecute, ioex);
                 }
-                catch (MyCatException ex)
+                catch (MySqlException ex)
                 {
 
                     if (ex.InnerException is TimeoutException)
@@ -520,7 +520,7 @@ namespace Pomelo.Data.MyCat
                     {
                         // Reset SqlLimit did not work, connection is hosed.
                         Connection.Abort();
-                        throw new MyCatException(ex.Message, true, ex);
+                        throw new MySqlException(ex.Message, true, ex);
                     }
 
                     // if we caught an exception because of a cancel, then just return null
@@ -529,7 +529,7 @@ namespace Pomelo.Data.MyCat
                     if (ex.IsFatal)
                         Connection.Close();
                     if (ex.Number == 0)
-                        throw new MyCatException(Resources.FatalErrorDuringExecute, ex);
+                        throw new MySqlException(Resources.FatalErrorDuringExecute, ex);
                     throw;
                 }
                 finally
@@ -577,11 +577,11 @@ namespace Pomelo.Data.MyCat
         }
 
         /// <include file='docs/mysqlcommand.xml' path='docs/ExecuteReader1/*'/>
-        public new MyCatDataReader ExecuteReader(CommandBehavior behavior)
+        public new MySqlDataReader ExecuteReader(CommandBehavior behavior)
         {
 #if !NETSTANDARD1_3
             // give our interceptors a shot at it first
-            MyCatDataReader interceptedReader = null;
+            MySqlDataReader interceptedReader = null;
             if (connection != null &&
                  connection.commandInterceptor != null &&
                  connection.commandInterceptor.ExecuteReader(CommandText, behavior, ref interceptedReader))
@@ -597,7 +597,7 @@ namespace Pomelo.Data.MyCat
             if (String.IsNullOrEmpty(cmdText))
                 Throw(new InvalidOperationException(Resources.CommandTextNotInitialized));
 
-            string sql = cmdText.Trim(';');
+            string sql = cmdText.Trim(';').Trim();
 
             lock (driver)
             {
@@ -665,7 +665,7 @@ namespace Pomelo.Data.MyCat
 
                 try
                 {
-                    MyCatDataReader reader = new MyCatDataReader(this, statement, behavior);
+                    MySqlDataReader reader = new MySqlDataReader(this, statement, behavior);
                     connection.Reader.Add(reader);
                     canceled = false;
                     // execute the statement
@@ -675,14 +675,14 @@ namespace Pomelo.Data.MyCat
                     {
                         reader.NextResult();
                     }
-                    catch (MyCatException ex)
+                    catch (MySqlException ex)
                     {
                         if (ex.Number != 1064)
                             throw;
                     }
                     success = true;
                     
-                    if (sql.Split(';').Count() > 0)
+                    if (sql.Split(';').Count() > 0 && sql.IndexOf("SELECT") != 0)
                     {
                         reader.Dispose();
                         connection.Reader.Remove(reader);
@@ -704,9 +704,9 @@ namespace Pomelo.Data.MyCat
                 catch (IOException ioex)
                 {
                     connection.Abort(); // Closes connection without returning it to the pool
-                    throw new MyCatException(Resources.FatalErrorDuringExecute, ioex);
+                    throw new MySqlException(Resources.FatalErrorDuringExecute, ioex);
                 }
-                catch (MyCatException ex)
+                catch (MySqlException ex)
                 {
 
                     if (ex.InnerException is TimeoutException)
@@ -721,7 +721,7 @@ namespace Pomelo.Data.MyCat
                     {
                         // Reset SqlLimit did not work, connection is hosed.
                         Connection.Abort();
-                        throw new MyCatException(ex.Message, true, ex);
+                        throw new MySqlException(ex.Message, true, ex);
                     }
 
                     // if we caught an exception because of a cancel, then just return null
@@ -730,7 +730,7 @@ namespace Pomelo.Data.MyCat
                     if (ex.IsFatal)
                         Connection.Close();
                     if (ex.Number == 0)
-                        throw new MyCatException(Resources.FatalErrorDuringExecute, ex);
+                        throw new MySqlException(Resources.FatalErrorDuringExecute, ex);
                     throw;
                 }
                 finally
@@ -759,9 +759,9 @@ namespace Pomelo.Data.MyCat
         {
             sql = StringUtility.ToLowerInvariant(sql);
             if (!sql.StartsWith("select") && !sql.StartsWith("show"))
-                Throw(new MyCatException(Resources.ReplicatedConnectionsAllowOnlyReadonlyStatements));
+                Throw(new MySqlException(Resources.ReplicatedConnectionsAllowOnlyReadonlyStatements));
             if (sql.EndsWith("for update") || sql.EndsWith("lock in share mode"))
-                Throw(new MyCatException(Resources.ReplicatedConnectionsAllowOnlyReadonlyStatements));
+                Throw(new MySqlException(Resources.ReplicatedConnectionsAllowOnlyReadonlyStatements));
         }
 
         private bool IsReadOnlyCommand(string sql)
@@ -785,7 +785,7 @@ namespace Pomelo.Data.MyCat
                 return val;
 #endif
 
-            using (MyCatDataReader reader = ExecuteReader())
+            using (MySqlDataReader reader = ExecuteReader())
             {
                 if (reader.Read())
                     val = reader.GetValue(0);
@@ -798,12 +798,12 @@ namespace Pomelo.Data.MyCat
         {
             if ((behavior & CommandBehavior.SchemaOnly) != 0)
             {
-                new MyCatCommand("SET SQL_SELECT_LIMIT=0", connection).ExecuteNonQuery();
+                new MySqlCommand("SET SQL_SELECT_LIMIT=0", connection).ExecuteNonQuery();
                 resetSqlSelect = true;
             }
             else if ((behavior & CommandBehavior.SingleRow) != 0)
             {
-                new MyCatCommand("SET SQL_SELECT_LIMIT=1", connection).ExecuteNonQuery();
+                new MySqlCommand("SET SQL_SELECT_LIMIT=1", connection).ExecuteNonQuery();
                 resetSqlSelect = true;
             }
         }
@@ -867,12 +867,12 @@ namespace Pomelo.Data.MyCat
 
         /// <summary>
         /// Initiates the asynchronous execution of the SQL statement or stored procedure 
-        /// that is described by this <see cref="MyCatCommand"/>, and retrieves one or more 
+        /// that is described by this <see cref="MySqlCommand"/>, and retrieves one or more 
         /// result sets from the server. 
         /// </summary>
         /// <returns>An <see cref="IAsyncResult"/> that can be used to poll, wait for results, 
         /// or both; this value is also needed when invoking EndExecuteReader, 
-        /// which returns a <see cref="MyCatDataReader"/> instance that can be used to retrieve 
+        /// which returns a <see cref="MySqlDataReader"/> instance that can be used to retrieve 
         /// the returned rows. </returns>
         public IAsyncResult BeginExecuteReader()
         {
@@ -881,19 +881,19 @@ namespace Pomelo.Data.MyCat
 
         /// <summary>
         /// Initiates the asynchronous execution of the SQL statement or stored procedure 
-        /// that is described by this <see cref="MyCatCommand"/> using one of the 
+        /// that is described by this <see cref="MySqlCommand"/> using one of the 
         /// <b>CommandBehavior</b> values. 
         /// </summary>
         /// <param name="behavior">One of the <see cref="CommandBehavior"/> values, indicating 
         /// options for statement execution and data retrieval.</param>
         /// <returns>An <see cref="IAsyncResult"/> that can be used to poll, wait for results, 
         /// or both; this value is also needed when invoking EndExecuteReader, 
-        /// which returns a <see cref="MyCatDataReader"/> instance that can be used to retrieve 
+        /// which returns a <see cref="MySqlDataReader"/> instance that can be used to retrieve 
         /// the returned rows. </returns>
         public IAsyncResult BeginExecuteReader(CommandBehavior behavior)
         {
             if (caller != null)
-                Throw(new MyCatException(Resources.UnableToStartSecondAsyncOp));
+                Throw(new MySqlException(Resources.UnableToStartSecondAsyncOp));
 
             caller = new AsyncDelegate(AsyncExecuteWrapper);
             asyncResult = caller.BeginInvoke(1, behavior, null, null);
@@ -902,24 +902,24 @@ namespace Pomelo.Data.MyCat
 
         /// <summary>
         /// Finishes asynchronous execution of a SQL statement, returning the requested 
-        /// <see cref="MyCatDataReader"/>.
+        /// <see cref="MySqlDataReader"/>.
         /// </summary>
         /// <param name="result">The <see cref="IAsyncResult"/> returned by the call to 
         /// <see cref="BeginExecuteReader()"/>.</param>
-        /// <returns>A <b>MyCatDataReader</b> object that can be used to retrieve the requested rows. </returns>
-        public MyCatDataReader EndExecuteReader(IAsyncResult result)
+        /// <returns>A <b>MySqlDataReader</b> object that can be used to retrieve the requested rows. </returns>
+        public MySqlDataReader EndExecuteReader(IAsyncResult result)
         {
             result.AsyncWaitHandle.WaitOne();
             AsyncDelegate c = caller;
             caller = null;
             if (thrownException != null)
                 throw thrownException;
-            return (MyCatDataReader)c.EndInvoke(result);
+            return (MySqlDataReader)c.EndInvoke(result);
         }
 
         /// <summary>
         /// Initiates the asynchronous execution of the SQL statement or stored procedure 
-        /// that is described by this <see cref="MyCatCommand"/>. 
+        /// that is described by this <see cref="MySqlCommand"/>. 
         /// </summary>
         /// <param name="callback">
         /// An <see cref="AsyncCallback"/> delegate that is invoked when the command's 
@@ -934,7 +934,7 @@ namespace Pomelo.Data.MyCat
         public IAsyncResult BeginExecuteNonQuery(AsyncCallback callback, object stateObject)
         {
             if (caller != null)
-                Throw(new MyCatException(Resources.UnableToStartSecondAsyncOp));
+                Throw(new MySqlException(Resources.UnableToStartSecondAsyncOp));
 
             caller = new AsyncDelegate(AsyncExecuteWrapper);
             asyncResult = caller.BeginInvoke(2, CommandBehavior.Default,
@@ -944,7 +944,7 @@ namespace Pomelo.Data.MyCat
 
         /// <summary>
         /// Initiates the asynchronous execution of the SQL statement or stored procedure 
-        /// that is described by this <see cref="MyCatCommand"/>. 
+        /// that is described by this <see cref="MySqlCommand"/>. 
         /// </summary>
         /// <returns>An <see cref="IAsyncResult"/> that can be used to poll or wait for results, 
         /// or both; this value is also needed when invoking <see cref="EndExecuteNonQuery"/>, 
@@ -952,7 +952,7 @@ namespace Pomelo.Data.MyCat
         public IAsyncResult BeginExecuteNonQuery()
         {
             if (caller != null)
-                Throw(new MyCatException(Resources.UnableToStartSecondAsyncOp));
+                Throw(new MySqlException(Resources.UnableToStartSecondAsyncOp));
 
             caller = new AsyncDelegate(AsyncExecuteWrapper);
             asyncResult = caller.BeginInvoke(2, CommandBehavior.Default, null, null);
@@ -982,7 +982,7 @@ namespace Pomelo.Data.MyCat
         /*		private ArrayList PrepareSqlBuffers(string sql)
                     {
                         ArrayList buffers = new ArrayList();
-                        MyCatStreamWriter writer = new MyCatStreamWriter(new MemoryStream(), connection.Encoding);
+                        MySqlStreamWriter writer = new MySqlStreamWriter(new MemoryStream(), connection.Encoding);
                         writer.Version = connection.driver.Version;
 
                         // if we are executing as a stored procedure, then we need to add the call
@@ -1007,7 +1007,7 @@ namespace Pomelo.Data.MyCat
                                 if (ms.Length > 0)
                                     buffers.Add( ms );
 
-                                writer = new MyCatStreamWriter(new MemoryStream(), connection.Encoding);
+                                writer = new MySqlStreamWriter(new MemoryStream(), connection.Encoding);
                                 writer.Version = connection.driver.Version;
                                 continue;
                             }
@@ -1031,7 +1031,7 @@ namespace Pomelo.Data.MyCat
         internal long EstimatedSize()
         {
             long size = CommandText.Length;
-            foreach (MyCatParameter parameter in Parameters)
+            foreach (MySqlParameter parameter in Parameters)
                 size += parameter.EstimatedSize();
             return size;
         }
@@ -1056,13 +1056,13 @@ namespace Pomelo.Data.MyCat
         #region ICloneable
 
         /// <summary>
-        /// Creates a clone of this MyCatCommand object.  CommandText, Connection, and Transaction properties
+        /// Creates a clone of this MySqlCommand object.  CommandText, Connection, and Transaction properties
         /// are included as well as the entire parameter list.
         /// </summary>
-        /// <returns>The cloned MyCatCommand object</returns>
-        public MyCatCommand Clone()
+        /// <returns>The cloned MySqlCommand object</returns>
+        public MySqlCommand Clone()
         {
-            MyCatCommand clone = new MyCatCommand(cmdText, connection, curTransaction);
+            MySqlCommand clone = new MySqlCommand(cmdText, connection, curTransaction);
             clone.CommandType = CommandType;
             clone.commandTimeout = commandTimeout;
             clone.useDefaultTimeout = useDefaultTimeout;
@@ -1071,14 +1071,14 @@ namespace Pomelo.Data.MyCat
             clone.CacheAge = CacheAge;
             PartialClone(clone);
 
-            foreach (MyCatParameter p in parameters)
+            foreach (MySqlParameter p in parameters)
             {
                 clone.Parameters.Add(p.Clone());
             }
             return clone;
         }
 
-        partial void PartialClone(MyCatCommand clone);
+        partial void PartialClone(MySqlCommand clone);
 #if !(NETSTANDARD1_3)
         object ICloneable.Clone()
         {
@@ -1089,10 +1089,10 @@ namespace Pomelo.Data.MyCat
 
         #region Batching support
 
-        internal void AddToBatch(MyCatCommand command)
+        internal void AddToBatch(MySqlCommand command)
         {
             if (batch == null)
-                batch = new List<MyCatCommand>();
+                batch = new List<MySqlCommand>();
             batch.Add(command);
         }
 
@@ -1103,10 +1103,10 @@ namespace Pomelo.Data.MyCat
                 // if the command starts with insert and is "simple" enough, then
                 // we can use the multi-value form of insert
                 if (String.Compare(CommandText.Substring(0, 6), "INSERT", StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    MyCatCommand cmd = new MyCatCommand("SELECT @@sql_mode", Connection);
+                { 
+                    MySqlCommand cmd = new MySqlCommand("SELECT @@sql_mode", Connection);
                     string sql_mode = StringUtility.ToUpperInvariant(cmd.ExecuteScalar().ToString());
-                    MyCatTokenizer tokenizer = new MyCatTokenizer(CommandText);
+                    MySqlTokenizer tokenizer = new MySqlTokenizer(CommandText);
                     tokenizer.AnsiQuotes = sql_mode.IndexOf("ANSI_QUOTES") != -1;
                     tokenizer.BackslashEscapes = sql_mode.IndexOf("NO_BACKSLASH_ESCAPES") == -1;
                     string token = StringUtility.ToLowerInvariant(tokenizer.NextToken());
