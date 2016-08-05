@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1EA66C4E-1773-4E39-9747-30F931393F73}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7DDBA6EE-148D-4281-A3E7-09C54F3323D4}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Pomelo.Data.MyCat", "src\Pomelo.Data.MyCat\Pomelo.Data.MyCat.xproj", "{55F01808-7C92-43B2-B1E6-F19479E6303A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{55F01808-7C92-43B2-B1E6-F19479E6303A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55F01808-7C92-43B2-B1E6-F19479E6303A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55F01808-7C92-43B2-B1E6-F19479E6303A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55F01808-7C92-43B2-B1E6-F19479E6303A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{55F01808-7C92-43B2-B1E6-F19479E6303A} = {1EA66C4E-1773-4E39-9747-30F931393F73}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,100 @@
+{
+  "version": "1.0.0-*",
+
+  "buildOptions": {
+    "allowUnsafe": true,
+    "embed": {
+      "mappings": {
+        "Pomelo.Data.MyCat.resources": "Properties/Resources.resx"
+      }
+    }
+  },
+
+  "packOptions": {
+    "authors": [ "Amamiya Yuuko" ],
+    "description": "MySQL ADO.NET for .NET Core",
+    "tags": ["MySQL", ".NET Core"],
+    "projectUrl": "https://github.com/PomeloFoundation/Pomelo.Data.MyCat",
+    "iconUrl": "http://www.1234.sh/assets/Shared/pomelofoundation.png",
+    "licenseUrl": "https://github.com/PomeloFoundation/Pomelo.Data.MyCat/blob/master/LICENSE",
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/pomelofoundation/pomelo.data.mysql"
+    }
+  },
+
+  "dependencies": {
+    "Pomelo.Data.MySql": "1.0.0",
+    "Newtonsoft.Json": "9.0.1"
+  },
+
+  "frameworks": {
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Configuration": "4.0.0.0",
+
+        "System.Collections": {
+          "version": "4.0.0.0",
+          "type": "build"
+        },
+        "System.Diagnostics.Contracts": {
+          "version": "4.0.0.0",
+          "type": "build"
+        },
+        "System.Transactions": {
+          "version": "4.0.0.0",
+          "type": "build"
+        },
+        "System.DirectoryServices": {
+          "version": "4.0.0.0",
+          "type": "build"
+        },
+        "System.Data": {
+          "version": "4.0.0.0",
+          "type": "build"
+        },
+        "System.Management": "4.0.0.0",
+        "System.Numerics": {
+          "version": "4.0.0.0",
+          "type": "build"
+        },
+        "System.Xml": {
+          "version": "4.0.0.0",
+          "type": "build"
+        }
+      }
+    },
+    "netstandard1.3": {
+      "dependencies": {
+        "System.Collections.Concurrent": "4.0.12",
+        "System.ComponentModel": "4.0.1",
+        "System.ComponentModel.TypeConverter": "4.1.0",
+        "System.Data.Common": "4.1.0",
+        "System.Diagnostics.Contracts": "4.0.1",
+        "System.Diagnostics.Debug": "4.0.11",
+        "System.Diagnostics.Tools": "4.0.1",
+        "System.Globalization": "4.0.11",
+        "System.Globalization.Extensions": "4.0.1",
+        "System.Linq": "4.1.0",
+        "System.Net.NameResolution": "4.0.0",
+        "System.Net.Primitives": "4.0.11",
+        "System.Net.Security": "4.0.0",
+        "System.Net.Sockets": "4.1.0",
+        "System.Reflection.TypeExtensions": "4.1.0",
+        "System.Resources.ResourceManager": "4.0.1",
+        "System.Runtime.Extensions": "4.1.0",
+        "System.Runtime.InteropServices": "4.1.0",
+        "System.Runtime.Numerics": "4.0.1",
+        "System.Security.Cryptography.Algorithms": "4.2.0",
+        "System.Security.Cryptography.Primitives": "4.0.0",
+        "System.Security.Cryptography.X509Certificates": "4.1.0",
+        "System.Security.Principal": "4.0.1",
+        "System.Text.Encoding.Extensions": "4.0.11",
+        "System.Text.RegularExpressions": "4.1.0",
+        "System.Threading.Timer": "4.0.1",
+        "System.Console": "4.0.0",
+        "System.IO.FileSystem": "4.0.1"
+      }
+    }
+  }
+}
