@@ -12,14 +12,14 @@
 
   "packOptions": {
     "authors": [ "Amamiya Yuuko" ],
-    "description": "MySQL ADO.NET for .NET Core",
-    "tags": ["MySQL", ".NET Core"],
+    "description": "MyCat ADO.NET for .NET Core",
+    "tags": [ "MyCat", "MySQL", ".NET Core" ],
     "projectUrl": "https://github.com/PomeloFoundation/Pomelo.Data.MyCat",
     "iconUrl": "http://www.1234.sh/assets/Shared/pomelofoundation.png",
     "licenseUrl": "https://github.com/PomeloFoundation/Pomelo.Data.MyCat/blob/master/LICENSE",
     "repository": {
       "type": "git",
-      "url": "git://github.com/pomelofoundation/pomelo.data.mysql"
+      "url": "git://github.com/pomelofoundation/pomelo.data.mycat"
     }
   },
 
