@@ -392,7 +392,7 @@ namespace Pomelo.Data.MyCat
             return ExecuteReader(CommandBehavior.Default);
         }
 
-        private MyCatDataReader _ExecuteReader(CommandBehavior behavior)
+        private MyCatDataReader _ExecuteReader(CommandBehavior behavior, string sql)
         {
 #if !NETSTANDARD1_3
             // give our interceptors a shot at it first
@@ -411,9 +411,7 @@ namespace Pomelo.Data.MyCat
             cmdText = cmdText.Trim();
             if (String.IsNullOrEmpty(cmdText))
                 Throw(new InvalidOperationException(Resources.CommandTextNotInitialized));
-
-            string sql = cmdText.Trim(';').Split(';').Last().Trim(';');
-
+            
             lock (driver)
             {
 #if !NETSTANDARD1_3
@@ -598,6 +596,11 @@ namespace Pomelo.Data.MyCat
                 Throw(new InvalidOperationException(Resources.CommandTextNotInitialized));
 
             string sql = cmdText.Trim(';');
+            var splited_sql = sql.Split(';');
+            var not_second_query = splited_sql.First().IndexOf("SELECT") >= 0 || splited_sql.Count() == 1;
+            var second_query = splited_sql.Where(x => x.IndexOf("SELECT") >= 0).ToList();
+            if (!not_second_query)
+                sql = string.Join(";", splited_sql.Where(x => x.IndexOf("SELECT") < 0));
 
             lock (driver)
             {
@@ -682,11 +685,12 @@ namespace Pomelo.Data.MyCat
                     }
                     success = true;
                     
-                    if (sql.Split(';').Count() > 0)
+                    if (!not_second_query)
                     {
                         reader.Dispose();
                         connection.Reader.Remove(reader);
-                        return _ExecuteReader(behavior);
+                        if (second_query.Count > 0)
+                            return _ExecuteReader(behavior, second_query.First());
                     }
 
                     return reader;
