@@ -27,7 +27,7 @@ namespace Pomelo.Data.MyCat
       options.Add(new MyCatConnectionStringOption("server", "host,data source,datasource,address,addr,network address", typeof(string), "" /*"localhost"*/, false));
       options.Add(new MyCatConnectionStringOption("database", "initial catalog", typeof(string), string.Empty, false));
       options.Add(new MyCatConnectionStringOption("protocol", "connection protocol, connectionprotocol", typeof(MyCatConnectionProtocol), MyCatConnectionProtocol.Sockets, false));
-      options.Add(new MyCatConnectionStringOption("port", null, typeof(uint), ( uint )3306, false));
+      options.Add(new MyCatConnectionStringOption("port", null, typeof(uint), ( uint )8066, false));
       options.Add(new MyCatConnectionStringOption("pipe", "pipe name,pipename", typeof(string), "MYSQL", false));
       options.Add(new MyCatConnectionStringOption("compress", "use compression,usecompression", typeof(bool), false, false));
       options.Add(new MyCatConnectionStringOption("allowbatch", "allow batch", typeof(bool), true, false));
