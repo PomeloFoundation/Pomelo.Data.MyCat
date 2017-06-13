@@ -347,15 +347,6 @@ namespace Pomelo.Data.MyCat
             }
         }
 
-        private int GetTimeZoneOffset(MyCatConnection con)
-        {
-            MyCatCommand cmd = new MyCatCommand("select timediff( curtime(), utc_time() )", con);
-            string s = cmd.ExecuteScalar() as string;
-            if (s == null) s = "0:00";
-
-            return int.Parse(s.Substring(0, s.IndexOf(':')));
-        }
-
         /// <summary>
         /// Loads all the current character set names and ids for this server 
         /// into the charSets hashtable
