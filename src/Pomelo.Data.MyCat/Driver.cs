@@ -337,7 +337,7 @@ namespace Pomelo.Data.MyCat
                     }
                 }
                 // Get time zone offset as numerical value
-                timeZoneOffset = GetTimeZoneOffset(connection);
+                timeZoneOffset = TimeZoneInfo.Local.BaseUtcOffset.Hours;
                 return hash;
             }
             catch (Exception ex)
